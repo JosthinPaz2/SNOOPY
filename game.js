@@ -1293,7 +1293,15 @@ function playTone(freq, duration, type = "sine") {
   osc.stop(now + duration + 0.01);
 }
 
+function isEditableTarget(target) {
+  if (!target) return false;
+  const tag = target.tagName;
+  return tag === "INPUT" || tag === "TEXTAREA" || target.isContentEditable;
+}
+
 document.addEventListener("keydown", (event) => {
+  if (isEditableTarget(event.target)) return;
+
   if (event.code === "Space" || event.code === "ArrowUp" || event.code === "KeyW") {
     event.preventDefault();
   }
@@ -1306,6 +1314,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("keyup", (event) => {
+  if (isEditableTarget(event.target)) return;
   keys[event.code] = false;
 });
 
