@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mario Bros Casi Algo</title>
+  <link rel="icon" type="image/svg+xml" href="favicon-star.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <section id="startScreen" class="screen active">
+      <div class="floating-hearts" id="startHearts"></div>
+      <div class="card start-card">
+        <p class="kicker">Modo Casi Algo</p>
+        <h1>Mini Mario Romantico</h1>
+        <p id="previewMessage" class="preview">Para ti ❤️</p>
+
+        <label for="nameInput">Tu nombre</label>
+        <input id="nameInput" type="text" placeholder="Escribe tu nombre..." maxlength="30" />
+
+        <p class="selector-title">Elige tu personaje</p>
+        <div class="character-options" role="radiogroup" aria-label="Selector de personaje">
+          <label class="character-option">
+            <input type="radio" name="character" value="snoopy" checked />
+            <img src="Snoopy.png" alt="Snoopy" class="character-thumb" />
+            <span>Snoopy</span>
+          </label>
+          <label class="character-option">
+            <input type="radio" name="character" value="hello-kitty" />
+            <img src="Hellokitty.png" alt="Hello Kitty" class="character-thumb" />
+            <span>Hello Kitty</span>
+          </label>
+          <label class="character-option">
+            <input type="radio" name="character" value="spider-man" />
+            <img src="Spiderman.png" alt="Spider-Man" class="character-thumb" />
+            <span>Spider-Man</span>
+          </label>
+        </div>
+
+        <button id="continueBtn">Continuar</button>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="game-shell">
+        <div class="shell-glow"></div>
+
+        <canvas id="gameCanvas" width="960" height="540"></canvas>
+
+        <div class="retro-hud">
+          <div id="hudHearts" class="retro-title">CORAZONES: 0</div>
+          <div class="hud-actions">
+            <button id="changeCharacterBtn" class="change-btn" type="button">CAMBIAR PERSONAJE</button>
+            <span class="star">★</span>
+          </div>
+          <div id="hudName" class="retro-message">PARA TI ❤️</div>
+        </div>
+
+        <div id="softMessage" class="soft-message hidden"></div>
+        <div id="bouquetEvent" class="bouquet hidden">
+          <div class="bouquet-inner">🌻🌹🌻</div>
+          <p>Sorpresa para ti</p>
+        </div>
+
+        <div class="touch-controls" aria-label="Controles tactiles">
+          <button id="jumpBtn" type="button">▲</button>
+          <button id="leftBtn" type="button">◀</button>
+          <button id="rightBtn" type="button">▶</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="endScreen" class="screen">
+      <div class="floating-hearts" id="endHearts"></div>
+      <div class="card end-card">
+        <h2>Fin Del Nivel</h2>
+        <p id="finalMessage">Eres especial ❤️</p>
+        <button id="restartBtn">Jugar otra vez</button>
+      </div>
+    </section>
+
+    <div id="heartModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <h2>¡Lo hiciste! 🎉</h2>
+        <p class="modal-text">Ya sumaste 10 corazones ❤️</p>
+        <p class="modal-question">¿Quieres seguir hablando conmigo?</p>
+        <div class="modal-buttons">
+          <button id="yesBtn" class="btn-yes">Sí 💕</button>
+          <button id="noBtn" class="btn-no">No está bien 😊</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
