@@ -1,0 +1,37 @@
+{
+  "sofia": {
+    "name": "Sofia",
+    "start": "Para ti, la mejor arquitecta ❤️",
+    "end": "Sofia, eres increible ❤️"
+  },
+  "samuel": {
+    "name": "Samuel",
+    "start": "Para ti, el mas bonito nino ❤️",
+    "end": "Samuel, tienes algo especial ❤️"
+  },
+  "andres": {
+    "name": "Andres",
+    "start": "Para ti, el de los ojitos lindos ❤️",
+    "end": "Andres, me encantas pero poquito 😏❤️"
+  },
+  "juliana": {
+    "name": "Juliana",
+    "start": "Juliana, eres la mejor amiga del mundo ❤️",
+    "end": "Juliana, te adoro, te amo y gracias por ser tan especial 💖"
+  },
+  "carvajal": {
+    "name": "Carvajal",
+    "start": "Para ti, Carvajal, que me caes bien y eres lindo ❤️",
+    "end": "Carvajal, se me cayo el jabon... upps 😏❤️"
+  },
+  "camila": {
+    "name": "Camila",
+    "start": "Camila, gracias por ser mi facu amiga ❤️",
+    "end": "Camila, te quiero muchote 💖"
+  },
+  "grupo galatico": {
+    "name": "Grupo Galatico",
+    "start": "Grupo Galatico, gracias por ser mi grupo en el SENA ❤️",
+    "end": "Grupo Galatico, los quiero mucho 💖"
+  }
+}

@@ -1,4 +1,6 @@
 const STORAGE_KEY = "marioRomanticoState";
+const CUSTOM_MESSAGES_DB_KEY = "marioRomanticoMessagesDb";
+const MESSAGES_DB_FILE = "messages-db.json";
 
 const appState = {
   playerName: "",
@@ -16,6 +18,11 @@ const nameInput = document.getElementById("nameInput");
 const continueBtn = document.getElementById("continueBtn");
 const restartBtn = document.getElementById("restartBtn");
 const previewMessage = document.getElementById("previewMessage");
+const messageDbStatus = document.getElementById("messageDbStatus");
+const customNameInput = document.getElementById("customNameInput");
+const customStartInput = document.getElementById("customStartInput");
+const customEndInput = document.getElementById("customEndInput");
+const saveCustomMessageBtn = document.getElementById("saveCustomMessageBtn");
 
 const hudName = document.getElementById("hudName");
 const hudHearts = document.getElementById("hudHearts");
@@ -64,6 +71,8 @@ const movementConfig = {
 };
 
 const phrases = ["Oye 😏", "Vas bien", "Mmm interesante", "No estás nada mal ❤️"];
+let baseMessagesDb = {};
+let customMessagesDb = {};
 
 const leftBtn = document.getElementById("leftBtn");
 const rightBtn = document.getElementById("rightBtn");
@@ -184,32 +193,13 @@ function titleCaseName(value) {
 
 function getPersonalizedMessages(name) {
   const normalized = normalizeName(name);
+  const mergedDb = getMergedMessagesDb();
+  const personMessages = normalized ? mergedDb[normalized] : null;
 
-  if (normalized === "sofia") {
+  if (personMessages) {
     return {
-      start: "Para ti, la mejor arquitecta ❤️",
-      end: "Sofía, eres increíble ❤️"
-    };
-  }
-
-  if (normalized === "samuel") {
-    return {
-      start: "Para ti, el más bonito niño ❤️",
-      end: "Samuel, tienes algo especial ❤️"
-    };
-  }
-
-  if (normalized === "andres") {
-    return {
-      start: "Para ti, el de los ojitos lindos ❤️",
-      end: "Andrés, me encantas pero poquito 😏❤️"
-    };
-  }
-
-  if (normalized === "juliana") {
-    return {
-      start: "Juliana, eres la mejor amiga del mundo ❤️",
-      end: "Juliana, te adoro, te amo y gracias por ser tan especial 💖"
+      start: personMessages.start,
+      end: personMessages.end
     };
   }
 
@@ -218,6 +208,145 @@ function getPersonalizedMessages(name) {
     start: "Para ti ❤️",
     end: displayName ? `${displayName}, eres especial ❤️` : "Eres especial ❤️"
   };
+}
+
+function getMergedMessagesDb() {
+  return {
+    ...baseMessagesDb,
+    ...customMessagesDb
+  };
+}
+
+function normalizeMessagesDb(dbLike) {
+  const normalizedDb = {};
+  if (!dbLike || typeof dbLike !== "object") return normalizedDb;
+
+  for (const [name, value] of Object.entries(dbLike)) {
+    if (!value || typeof value !== "object") continue;
+    const normalized = normalizeName(name);
+    if (!normalized) continue;
+
+    const displayName = titleCaseName(value.name || name) || titleCaseName(name);
+    const start = String(value.start || "").trim();
+    const end = String(value.end || "").trim();
+
+    if (!start || !end) continue;
+
+    normalizedDb[normalized] = {
+      name: displayName,
+      start,
+      end
+    };
+  }
+
+  return normalizedDb;
+}
+
+function saveCustomMessagesDb() {
+  localStorage.setItem(CUSTOM_MESSAGES_DB_KEY, JSON.stringify(customMessagesDb));
+}
+
+function loadCustomMessagesDb() {
+  const raw = localStorage.getItem(CUSTOM_MESSAGES_DB_KEY);
+  customMessagesDb = {};
+  if (!raw) return;
+
+  try {
+    const parsed = JSON.parse(raw);
+    customMessagesDb = normalizeMessagesDb(parsed);
+  } catch (error) {
+    console.warn("No se pudo leer la mini base de mensajes personalizada", error);
+  }
+}
+
+async function loadBaseMessagesDb() {
+  baseMessagesDb = {};
+
+  try {
+    const response = await fetch(MESSAGES_DB_FILE, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const parsed = await response.json();
+    baseMessagesDb = normalizeMessagesDb(parsed);
+  } catch (error) {
+    console.warn("No se pudo cargar la mini base externa de mensajes", error);
+  }
+}
+
+async function loadMessagesDb() {
+  await loadBaseMessagesDb();
+  loadCustomMessagesDb();
+}
+
+function refreshMessageDbStatus(name = "") {
+  if (!messageDbStatus) return;
+
+  const mergedDb = getMergedMessagesDb();
+  const count = Object.keys(mergedDb).length;
+  const normalized = normalizeName(name);
+  const exists = normalized && mergedDb[normalized];
+  const base = `${count} persona(s) en la mini base.`;
+
+  messageDbStatus.textContent = exists
+    ? `${base} Ya existe mensaje para ${titleCaseName(name)}.`
+    : base;
+}
+
+function syncCustomFormWithName(name) {
+  if (!customNameInput || !customStartInput || !customEndInput) return;
+
+  const trimmedName = name.trim();
+  const normalized = normalizeName(trimmedName);
+  const mergedDb = getMergedMessagesDb();
+
+  customNameInput.value = trimmedName;
+
+  if (normalized && mergedDb[normalized]) {
+    customStartInput.value = mergedDb[normalized].start;
+    customEndInput.value = mergedDb[normalized].end;
+    return;
+  }
+
+  customStartInput.value = "";
+  customEndInput.value = "";
+}
+
+function saveCustomMessage() {
+  if (!customNameInput || !customStartInput || !customEndInput) return;
+
+  const rawName = customNameInput.value.trim() || nameInput.value.trim();
+  const normalized = normalizeName(rawName);
+  if (!normalized) {
+    alert("Escribe un nombre para guardar el mensaje personalizado.");
+    return;
+  }
+
+  const start = customStartInput.value.trim();
+  const end = customEndInput.value.trim();
+
+  if (!start || !end) {
+    alert("Completa mensaje inicial y mensaje final.");
+    return;
+  }
+
+  customMessagesDb[normalized] = {
+    name: titleCaseName(rawName),
+    start,
+    end
+  };
+
+  saveCustomMessagesDb();
+  refreshMessageDbStatus(rawName);
+
+  const activeName = nameInput.value.trim();
+  if (normalizeName(activeName) === normalized) {
+    const m = getPersonalizedMessages(activeName);
+    previewMessage.textContent = m.start;
+    appState.messageStart = m.start;
+    appState.messageFinal = m.end;
+  }
 }
 
 function saveState() {
@@ -251,6 +380,8 @@ function setupFormFromState() {
   appState.messageStart = m.start;
   appState.messageFinal = m.end;
   previewMessage.textContent = m.start;
+  syncCustomFormWithName(appState.playerName);
+  refreshMessageDbStatus(appState.playerName);
   updateSoundButton();
 }
 
@@ -1234,7 +1365,15 @@ function updateViewportHeightVar() {
 nameInput.addEventListener("input", () => {
   const m = getPersonalizedMessages(nameInput.value);
   previewMessage.textContent = m.start;
+  syncCustomFormWithName(nameInput.value);
+  refreshMessageDbStatus(nameInput.value);
 });
+
+if (saveCustomMessageBtn) {
+  saveCustomMessageBtn.addEventListener("click", () => {
+    saveCustomMessage();
+  });
+}
 
 if (soundToggle) {
   soundToggle.addEventListener("click", () => {
@@ -1285,7 +1424,7 @@ noBtn.addEventListener("click", () => {
   handleHeartModalResponse(false);
 });
 
-function init() {
+async function init() {
   updateInputMode();
   updateViewportHeightVar();
 
@@ -1300,6 +1439,7 @@ function init() {
   });
 
   preloadCharacterImages();
+  await loadMessagesDb();
   loadState();
   setupFormFromState();
 

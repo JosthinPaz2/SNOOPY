@@ -101,6 +101,24 @@ input[type="text"] {
   margin-top: 8px;
 }
 
+.message-db-box {
+  margin-top: 14px;
+  background: #fff8fb;
+  border: 2px dashed #ffb0c6;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.message-db-box input {
+  margin-top: 8px;
+}
+
+.message-db-status {
+  margin: 0 0 6px;
+  font-weight: 700;
+  color: #bf2a53;
+}
+
 .selector-title {
   margin: 16px 0 8px;
   font-weight: 800;
@@ -162,6 +180,13 @@ button {
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 8px 18px rgba(222, 42, 66, 0.35);
+}
+
+.secondary-btn {
+  margin-top: 10px;
+  width: 100%;
+  background: linear-gradient(140deg, #ff8a5c, #f4b23f);
+  box-shadow: 0 8px 18px rgba(196, 110, 34, 0.28);
 }
 
 button:hover {
